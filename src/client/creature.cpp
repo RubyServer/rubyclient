@@ -902,7 +902,7 @@ int Creature::getStepDuration(bool ignoreDiagonal, Otc::Direction dir)
 
     interval = std::max<int>(interval, g_game.getServerBeat());
 
-    if(!ignoreDiagonal && (m_lastStepDirection == Otc::NorthWest || m_lastStepDirection == Otc::NorthEast ||
+    if((m_lastStepDirection == Otc::NorthWest || m_lastStepDirection == Otc::NorthEast ||
        m_lastStepDirection == Otc::SouthWest || m_lastStepDirection == Otc::SouthEast))
         interval *= factor;
 
