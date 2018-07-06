@@ -659,7 +659,7 @@ void Creature::setHealthPercent(uint8_t healthPercent)
         m_informationColor = Color(112, 248, 168);
     else if(m_type == Proto::CreatureTypeMonster && healthPercent > 20)
         m_informationColor = Color(248, 224, 56);
-    else if(m_type == Proto::CreatureTypeMonster && healthPercent > 20)
+    else if(m_type == Proto::CreatureTypeMonster && healthPercent > 0)
         m_informationColor = Color(248, 88, 56);
     else if(m_type == CreatureTypePlayer && healthPercent > 92 || m_type == CreatureTypeNpc && healthPercent > 92)
         m_informationColor = Color(0x00, 0xBC, 0x00);
