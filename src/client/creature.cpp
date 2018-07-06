@@ -284,11 +284,12 @@ void Creature::drawInformation(const Point& point, bool useGray, const Rect& par
     }
 
     if(drawFlags & Otc::DrawBars && (!isNpc() || !g_game.getFeature(Otc::GameHideNpcNames))) {
-        g_painter->setColor(Color::black);
-        g_painter->drawFilledRect(backgroundRect);
 
         g_painter->setColor(m_informationColor);
         g_painter->drawFilledRect(healthRect);
+        ImagePtr health_bar = Image::load("data/images/game/health.png");
+        TexturePtr health_texture = TexturePtr(new Texture(health_bar, false));
+        g_painter->drawTextureRect(backgroundRect, Size(27, 4), health_texture);
     }
 
     if(drawFlags & Otc::DrawNames) {
