@@ -969,7 +969,7 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 
     for(int i = 0; i < listCount; ++i) {
         uint16_t itemId = msg->get<uint16_t>();
-        uint16_t count = msg->get<uint16_t>();
+        uint8_t count = msg->getByte();
 
         ItemPtr item = Item::create(itemId);
         item->setCountOrSubType(count);
@@ -986,14 +986,19 @@ void ProtocolGame::parseOpenNpcTrade(const InputMessagePtr& msg)
 
 void ProtocolGame::parsePlayerGoods(const InputMessagePtr& msg)
 {
-    std::vector<std::tuple<ItemPtr, uint16_t>> goods;
+    std::vector<std::tuple<ItemPtr, int>> goods;
 
     uint64_t money = msg->get<uint64_t>();
 
-    uint8_t size = msg->getByte();
-    for(uint8_t i = 0; i < size; i++) {
-        uint16_t itemId = msg->get<uint16_t>();
-        uint16_t amount = msg->get<uint16_t>();
+    int size = msg->getByte();
+    for(int i = 0; i < size; i++) {
+        int itemId = msg->get<uint16_t>();
+        int amount;
+
+        if(g_game.getFeature(Otc::GameDoubleShopSellAmount))
+            amount = msg->get<uint16_t>();
+        else
+            amount = msg->getByte();
 
         goods.push_back(std::make_tuple(Item::create(itemId), amount));
     }
@@ -1856,7 +1861,7 @@ void ProtocolGame::parseItemInfo(const InputMessagePtr& msg)
     for(int i=0;i<size;++i) {
         ItemPtr item(new Item);
         item->setId(msg->get<uint16_t>());
-        item->setCountOrSubType(msg->get<uint16_t>());
+        item->setCountOrSubType(msg->getByte());
 
         std::string desc = msg->getString();
         list.push_back(std::make_tuple(item, desc));
@@ -2220,6 +2225,9 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
         unpass = msg->getByte();
 
         if(creature) {
+            if(creatureType != -1)
+                creature->setType(creatureType);
+
             creature->setNameColor(nameColor);
             creature->setHealthPercent(healthPercent);
             creature->setDirection(direction);
@@ -2232,9 +2240,6 @@ CreaturePtr ProtocolGame::getCreature(const InputMessagePtr& msg, int type)
 
             if(emblem != -1)
                 creature->setEmblem(emblem);
-
-            if(creatureType != -1)
-                creature->setType(creatureType);
 
             if(icon != -1)
                 creature->setIcon(icon);
@@ -2279,7 +2284,7 @@ ItemPtr ProtocolGame::getItem(const InputMessagePtr& msg, int id)
     }
 
     if(item->isStackable() || item->isFluidContainer() || item->isSplash() || item->isChargeable())
-        item->setCountOrSubType(msg->get<uint16_t>());
+        item->setCountOrSubType(msg->getByte());
 
     if(g_game.getFeature(Otc::GameItemAnimationPhase)) {
         if(item->getAnimationPhases() > 1) {
