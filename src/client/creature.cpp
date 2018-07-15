@@ -678,6 +678,7 @@ void Creature::setHealthPercent(uint8_t healthPercent)
                 m_informationColor = Color(0x91, 0x0F, 0x0F);
         }
     }
+  
     m_healthPercent = healthPercent;
     callLuaField("onHealthPercentChange", healthPercent);
 
